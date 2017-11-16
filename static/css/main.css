@@ -1,0 +1,16 @@
+html.dark {
+    background: #222;
+}
+
+html.dark * {
+    color: white;
+}
+
+html {
+    background: #fafafa;
+}
+
+html * {
+    color: #333;
+}
+

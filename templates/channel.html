@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="uk-container">
+    <div class='uk-cover-container uk-height-small'>
+        <img src="https://vlognchips.ru/assets/images/header_light.png" alt="" uk-cover> 
+    </div>
+
+    <form class="uk-form-horizontal" method="post">
+        <div class="uk-margin-large-top">
+            <div class="uk-form-controls uk-flex uk-flex-right">
+                <button class="uk-button uk-button-secondary" id="back">На Главную</button>                               
+                <button class="uk-button uk-button-primary" id="loadYTVids" disabled>Загрузить данные youtube</button>                               
+                <button class="uk-button uk-button-danger" id="clearTable">Очистить таблицу</button>                               
+            </div>
+        </div>
+    </form>
+
+    <h3>Сохранённые в БД:</h3>
+
+    <table class="uk-table uk-table-striped">
+        <thead>
+            <tr>
+                <th>Превью</th>
+                <th>Название</th>
+                <th>Доступно в API</th>
+            </tr>
+            <tbody>
+                {% for video in author.videos %}
+                    <tr>
+                        <td>
+                            <img src="https://img.youtube.com/vi/{{video.link}}/maxresdefault.jpg" style="max-width: 120px;">
+                        </td>
+                        <td><a href="https://www.youtube.com/watch?v={{video.link}}" class='uk-link' target="_blank">{{video.name}}</a></td>
+                        <td><input type="checkbox" data-link="{{video.link}}" class="uk-checkbox" {{ video | isInApi }}></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </thead>
+
+    </table>
+   
+</div>
+
+<script>
+    Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox]')).map(function(t){
+        t.addEventListener("change", function(){
+            var that = this;
+            this.setAttribute('disabled','true')
+            var xhr = new XMLHttpRequest();
+            xhr.open('get','/api/availability/'+this.getAttribute('data-link'));
+            xhr.addEventListener("readystatechange", function(){
+                if(xhr.readyState === XMLHttpRequest.DONE){
+                    that.removeAttribute("disabled");               
+                }
+            }.bind(that))
+            xhr.send();
+        });
+    });
+
+    document.querySelector("#loadYTVids").addEventListener("click", function(){
+        window.open("{{ url_for('load_videos_yt', yt_id=author.yt_id)}}","_self");
+    })
+
+    document.querySelector("#back").addEventListener("click", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        window.open("{{url_for('index')}}","_self");
+    });
+
+    document.querySelector("#clearTable").addEventListener("click", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        
+        window.open("{{ url_for('delete_videos_for', yt_id=author.yt_id)}}","_self");
+    })
+</script>
+{% endblock %}
