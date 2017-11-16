@@ -5,7 +5,7 @@ from datetime import datetime
 import os, requests, json, re
 
 secret = os.urandom(24)
-GAPP_KEY = "AIzaSyDI49mvidsduT_9s7RkC35nqZFhkdW544Q"
+GAPP_KEY = ""
 app = Flask(__name__)
 app.secret_key = secret
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///pool.db"
